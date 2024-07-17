@@ -1,8 +1,8 @@
 package com.sbg.spapi.services;
 
 import com.sbg.spapi.dao.Client;
-import com.sbg.spapi.dao.ClientCredentials;
-import com.sbg.spapi.dao.ClientRepository;
+import com.sbg.spapi.dao.dto.ClientCredentials;
+import com.sbg.spapi.dao.repositories.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,6 +43,10 @@ public class ClientService {
         return client.isPresent() && client.get().getActive() && client.get().getClientSecret().equals(clientSecret);
     }
 
+    /**
+     * Creates the initial client that can be used to interact with the API
+     */
+    //TODO: There should be a limitation on what this client can do
     @Bean
     public void createInitialClient() {
         if (repository.count() == 0) {

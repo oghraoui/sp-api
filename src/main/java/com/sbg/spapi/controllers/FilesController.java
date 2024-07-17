@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/files")
@@ -15,8 +15,11 @@ public class FilesController {
     private final GraphService graphService;
 
     @PostMapping("/upload")
-    public String uploadFile(@RequestPart("drive") String drive, @RequestParam("file") MultipartFile file) throws IOException {
-        return graphService.uploadFile(drive, file.getOriginalFilename(), file.getInputStream());
+    public String uploadFile(@RequestParam("type") String type,
+                             @RequestParam("module") String module,
+                             @RequestParam(value = "project", required = false) String project,
+                             @RequestParam("file") MultipartFile file) throws Exception {
+        return graphService.uploadFile(type, module, Objects.isNull(project) ? "" : project, file.getOriginalFilename(), file.getInputStream());
     }
 
     @DeleteMapping("/delete")

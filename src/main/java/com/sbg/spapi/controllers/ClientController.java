@@ -1,6 +1,6 @@
 package com.sbg.spapi.controllers;
 
-import com.sbg.spapi.dao.ClientCredentials;
+import com.sbg.spapi.dao.dto.ClientCredentials;
 import com.sbg.spapi.services.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
