@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @Embeddable
 @Getter @Setter
@@ -19,5 +20,18 @@ public class DocTypeKey implements Serializable {
         this.name = name;
         this.moduleCode = moduleCode;
         this.projectCode = projectCode;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DocTypeKey that = (DocTypeKey) o;
+        return Objects.equals(name, that.name) && Objects.equals(moduleCode, that.moduleCode) && Objects.equals(projectCode, that.projectCode);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, moduleCode, projectCode);
     }
 }
