@@ -33,3 +33,7 @@ build/
 .vscode/
 /.mvn/
 /src/main/resources/application-dev.properties
+
+mvn.cmd
+mvnw
+!.mvn/wrapper/maven-wrapper.properties
