@@ -29,5 +29,4 @@ public class SPDocument {
     private String documentType;
     private String projectCode;
     private String moduleCode;
-
 }

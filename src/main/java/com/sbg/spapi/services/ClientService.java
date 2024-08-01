@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,7 +18,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ClientService {
 
-    private final ClientRepository repository;
     private final ClientRepository clientRepository;
 
     @Value("${init.client-id}") String clientId;
@@ -28,14 +28,14 @@ public class ClientService {
         client.setClientId(UUID.randomUUID().toString());
         client.setClientSecret(UUID.randomUUID().toString());
         client.setActive(true);
-        client = repository.save(client);
+        client = clientRepository.save(client);
         return new ClientCredentials(client.getClientId(), client.getClientSecret());
     }
 
     public void changeActiveStatus(String clientId, Boolean active) {
         Client client = clientRepository.findByClientId(clientId).orElseThrow();
         client.setActive(active);
-        repository.save(client);
+        clientRepository.save(client);
     }
 
     public boolean verifyClientCredentials(String clientId, String clientSecret) {
@@ -49,13 +49,17 @@ public class ClientService {
     //TODO: There should be a limitation on what this client can do
     @Bean
     public void createInitialClient() {
-        if (repository.count() == 0) {
+        if (clientRepository.count() == 0) {
             Client client = new Client();
             client.setClientId(clientId);
             client.setClientSecret(clientSecret);
             client.setActive(true);
-            repository.save(client);
+            clientRepository.save(client);
             log.info("Created new client {}", clientId);
         }
+    }
+
+    public List<Client> getAll() {
+        return clientRepository.findAll();
     }
 }

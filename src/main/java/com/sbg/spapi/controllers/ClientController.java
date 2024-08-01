@@ -1,10 +1,13 @@
 package com.sbg.spapi.controllers;
 
+import com.sbg.spapi.dao.Client;
 import com.sbg.spapi.dao.dto.ClientCredentials;
 import com.sbg.spapi.services.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/client")
@@ -27,5 +30,10 @@ public class ClientController {
     public ResponseEntity<?> disableClient(@RequestParam("clientId") String clientId) {
         clientService.changeActiveStatus(clientId, false);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<Client>> getClients() {
+        return ResponseEntity.ok(clientService.getAll());
     }
 }

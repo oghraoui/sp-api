@@ -4,6 +4,8 @@ import com.sbg.spapi.dao.SPDocument;
 import com.sbg.spapi.dao.dto.UploadRequest;
 import com.sbg.spapi.services.GraphService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,13 +48,17 @@ public class FilesController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<?> find() {
-        return ResponseEntity.badRequest().body("To build");
+    public ResponseEntity<SPDocument> find(@RequestParam("systemId") Long systemId) {
+        return ResponseEntity.ok(graphService.getDocument(systemId));
     }
 
-    @GetMapping("/content")
-    public ResponseEntity<?> content() {
-        return ResponseEntity.badRequest().body("To build");
+    @GetMapping("/get/content")
+    public ResponseEntity<InputStreamResource> content(@RequestParam("systemId") Long systemId) {
+        SPDocument doc = graphService.getDocument(systemId);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header("Content-Disposition", "attachment; filename=\"" + doc.getName() + "\"")
+                .body(graphService.getDocumentContent(systemId));
     }
 
 }

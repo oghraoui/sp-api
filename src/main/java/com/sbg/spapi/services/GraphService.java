@@ -9,11 +9,10 @@ import com.sbg.spapi.dao.SPDocument;
 import com.sbg.spapi.dao.SPDrive;
 import com.sbg.spapi.dao.dto.UploadRequest;
 import com.sbg.spapi.dao.repositories.SPDocumentRepository;
-import com.sbg.spapi.dao.repositories.SPDriveRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
@@ -25,16 +24,12 @@ import java.time.format.DateTimeFormatter;
 public class GraphService {
     private final GraphServiceClient graphClient;
     private final DocumentTypeService documentTypeService;
+    private final DriveService driveService;
     private final SPDocumentRepository spDocumentRepository;
-    private final SPDriveRepository spDriveRepository;
-
-    public SPDrive getDriveById(String driveId) {
-        return spDriveRepository.findById(driveId).orElseThrow();
-    }
 
     public SPDocument uploadFile(UploadRequest uploadRequest, String filename, InputStream inputStream) {
         DocumentType documentType = documentTypeService.findDocumentType(uploadRequest.documentType(), uploadRequest.module(), uploadRequest.project());
-        SPDrive spDrive = getDriveById(documentType.getDriveId());
+        SPDrive spDrive = driveService.getDriveById(documentType.getDriveId());
 
         DriveItem uploadedFile = graphClient.drives().byDriveId(documentType.getDriveId())
                 .items()
@@ -91,18 +86,17 @@ public class GraphService {
                 .delete();
     }
 
-    @Bean
-    public void initDrives() {
-        if (spDriveRepository.count() == 0) {
-            SPDrive spDrive = new SPDrive();
-            spDrive.setDriveId("b!XjHoEbva80mKloM2dnzHxqj1CY-Y3w5Mp9Lozt_dOcZconxlwxw3R53yA35Bh-FR");
-            spDrive.setDriveName("BasicTest");
-            spDrive.setListId("657ca25c-1cc3-4737-9df2-037e4187e151");
-            spDrive.setSiteId("11e8315e-dabb-49f3-8a96-8336767cc7c6");
-            spDrive.setSiteName("SaudiBinLadinGroupTest");
-            spDriveRepository.save(spDrive);
-            log.info("Created initial drive");
-        }
+    public SPDocument getDocument(Long systemId) {
+        return spDocumentRepository.findById(systemId).orElseThrow();
+    }
+
+    public InputStreamResource getDocumentContent(Long systemId) {
+        SPDocument document = spDocumentRepository.findById(systemId).orElseThrow();
+        DocumentType documentType = documentTypeService.findDocumentType(document.getDocumentType(), document.getModuleCode(), document.getProjectCode());
+        return new InputStreamResource(graphClient
+                .drives().byDriveId(documentType.getDriveId())
+                .items().byDriveItemId(document.getSpId())
+                .content().get());
     }
 
     private FieldValueSet toFieldValueSet(DocumentType documentType, UploadRequest uploadRequest) {
