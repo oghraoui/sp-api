@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/api/types")
+@RequestMapping("/api/v1/doctypes")
 @RequiredArgsConstructor
 public class DocumentTypeController {
 
@@ -20,12 +20,12 @@ public class DocumentTypeController {
         return ResponseEntity.ok(documentTypeService.getAllDocumentTypes());
     }
 
-    @GetMapping("/find")
-    public ResponseEntity<?> find(@RequestParam("module") String module, @RequestParam(value = "project", required = false) String project, @RequestParam("type") String type) {
-        return ResponseEntity.ok(documentTypeService.findDocumentType(type, module, Objects.isNull(project) ? "" : project));
+    @GetMapping("/get")
+    public ResponseEntity<?> find(@RequestParam("module") String module, @RequestParam(value = "project", required = false) String project, @RequestParam("docType") String docType) {
+        return ResponseEntity.ok(documentTypeService.findDocumentType(docType, module, Objects.isNull(project) ? "" : project));
     }
 
-    @PostMapping("/")
+    @PostMapping("/create")
     public ResponseEntity<?> addDocumentType(@RequestBody DocumentType documentType) throws Exception {
         return ResponseEntity.ok(documentTypeService.createDocumentType(documentType));
     }

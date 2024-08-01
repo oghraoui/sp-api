@@ -12,6 +12,7 @@ import com.sbg.spapi.dao.repositories.SPDocumentRepository;
 import com.sbg.spapi.dao.repositories.SPDriveRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
@@ -54,6 +55,14 @@ public class GraphService {
                 .items().byListItemId(listItem.getId())
                 .patch(listItem);
 
+        SPDocument uploadedDocument = convertToSPDocument(uploadRequest, uploadedFile, documentType);
+
+        return spDocumentRepository.save(uploadedDocument);
+    }
+
+    private static @NotNull SPDocument convertToSPDocument(UploadRequest uploadRequest,
+                                                           DriveItem uploadedFile,
+                                                           DocumentType documentType) {
         SPDocument uploadedDocument = new SPDocument();
         uploadedDocument.setPkId(uploadRequest.pkId());
         uploadedDocument.setSpId(uploadedFile.getId());
@@ -72,7 +81,7 @@ public class GraphService {
         uploadedDocument.setDocumentType(documentType.getId().getName());
         uploadedDocument.setProjectCode(documentType.getId().getProjectCode());
         uploadedDocument.setModuleCode(documentType.getId().getModuleCode());
-        return spDocumentRepository.save(uploadedDocument);
+        return uploadedDocument;
     }
 
     public void deleteFile(String driveId, String fileId) {
@@ -98,16 +107,36 @@ public class GraphService {
 
     private FieldValueSet toFieldValueSet(DocumentType documentType, UploadRequest uploadRequest) {
         FieldValueSet fieldSet = new FieldValueSet();
-        fieldSet.getAdditionalData().put(documentType.getField1(), uploadRequest.field1());
-        fieldSet.getAdditionalData().put(documentType.getField2(), uploadRequest.field2());
-        fieldSet.getAdditionalData().put(documentType.getField3(), uploadRequest.field3());
-        fieldSet.getAdditionalData().put(documentType.getField4(), uploadRequest.field4());
-        fieldSet.getAdditionalData().put(documentType.getField5(), uploadRequest.field5());
-        fieldSet.getAdditionalData().put(documentType.getField6(), uploadRequest.field6());
-        fieldSet.getAdditionalData().put(documentType.getField7(), uploadRequest.field7().format(DateTimeFormatter.ISO_DATE_TIME));
-        fieldSet.getAdditionalData().put(documentType.getField8(), uploadRequest.field8().format(DateTimeFormatter.ISO_DATE_TIME));
-        fieldSet.getAdditionalData().put(documentType.getField9(), uploadRequest.field9());
-        fieldSet.getAdditionalData().put(documentType.getField10(), uploadRequest.field10());
+        if (uploadRequest.field1() != null && !uploadRequest.field1().isEmpty()) {
+            fieldSet.getAdditionalData().put(documentType.getSpField1Name(), uploadRequest.field1());
+        }
+        if (uploadRequest.field2() != null && !uploadRequest.field2().isEmpty()) {
+            fieldSet.getAdditionalData().put(documentType.getSpField2Name(), uploadRequest.field2());
+        }
+        if (uploadRequest.field3() != null && !uploadRequest.field3().isEmpty()) {
+            fieldSet.getAdditionalData().put(documentType.getSpField3Name(), uploadRequest.field3());
+        }
+        if (uploadRequest.field4() != null && !uploadRequest.field4().isEmpty()) {
+            fieldSet.getAdditionalData().put(documentType.getSpField4Name(), uploadRequest.field4());
+        }
+        if (uploadRequest.field5() != null && !uploadRequest.field5().isEmpty()) {
+            fieldSet.getAdditionalData().put(documentType.getSpField5Name(), uploadRequest.field5());
+        }
+        if (uploadRequest.field6() != null && !uploadRequest.field6().isEmpty()) {
+            fieldSet.getAdditionalData().put(documentType.getSpField6Name(), uploadRequest.field6());
+        }
+        if (uploadRequest.field7() != null) {
+            fieldSet.getAdditionalData().put(documentType.getSpField7Name(), uploadRequest.field7().format(DateTimeFormatter.ISO_DATE_TIME));
+        }
+        if (uploadRequest.field8() != null) {
+            fieldSet.getAdditionalData().put(documentType.getSpField8Name(), uploadRequest.field8().format(DateTimeFormatter.ISO_DATE_TIME));
+        }
+        if (uploadRequest.field9() != null) {
+            fieldSet.getAdditionalData().put(documentType.getSpField9Name(), uploadRequest.field9());
+        }
+        if (uploadRequest.field10() != null) {
+            fieldSet.getAdditionalData().put(documentType.getSpField10Name(), uploadRequest.field10());
+        }
         return fieldSet;
     }
 }

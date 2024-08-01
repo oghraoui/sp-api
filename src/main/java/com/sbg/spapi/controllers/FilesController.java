@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 
 @RestController
-@RequestMapping("/api/files")
+@RequestMapping("/api/v1/files")
 @RequiredArgsConstructor
 public class FilesController {
 
@@ -43,6 +43,16 @@ public class FilesController {
     public String deleteFile(@RequestParam("drive") String drive, @RequestParam("file") String file) {
         graphService.deleteFile(drive, file);
         return "Deleted file: " + file;
+    }
+
+    @GetMapping("/get")
+    public ResponseEntity<?> find() {
+        return ResponseEntity.badRequest().body("To build");
+    }
+
+    @GetMapping("/content")
+    public ResponseEntity<?> content() {
+        return ResponseEntity.badRequest().body("To build");
     }
 
 }
